@@ -4,6 +4,27 @@ All notable changes to this backend are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2026-05-24
+
+### Security (high)
+
+- **Default bind changed from `0.0.0.0` to `127.0.0.1`.** Previously the backend listened on all interfaces by default, so anyone on the same LAN (coffee shop / office / hotel Wi-Fi, etc.) could reach `http://<your-IP>:8080/api/video/extract` and submit URLs that consumed your SiliconFlow API key quota. There is no auth on the endpoint beyond your `$API_KEY`. Now it binds to localhost only.
+- Set `HOST=0.0.0.0` (or any other interface) explicitly if you really need remote access. The server prints a loud warning in that case so you don't enable it by accident.
+
+### Added
+
+- New `Security` section in `README.md` explaining the threat model, how to keep your API key out of shell history (`.env` + `chmod 600`), and what to do if a key leaks.
+
+### Upgrade
+
+```
+cd anycontent-obsidian-backend
+git pull
+restart your `uv run python web/app.py` process
+```
+
+If your plugin and backend were on the same machine (the default), no other action needed. If you were running the backend on a different machine on your LAN, set `HOST=0.0.0.0` before starting it again.
+
 ## [1.0.1] - 2026-05-24
 
 ### Fixed
@@ -36,3 +57,4 @@ First public release as `anycontent-obsidian-backend`, forked from
 
 [1.0.0]: https://github.com/vancoder4-cyber/anycontent-obsidian-backend/releases/tag/v1.0.0
 [1.0.1]: https://github.com/vancoder4-cyber/anycontent-obsidian-backend/releases/tag/v1.0.1
+[1.0.2]: https://github.com/vancoder4-cyber/anycontent-obsidian-backend/releases/tag/v1.0.2

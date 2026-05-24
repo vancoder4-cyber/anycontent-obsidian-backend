@@ -93,6 +93,29 @@ Streams an MP4 from the underlying CDN. Used by the plugin when *Save no-waterma
   - SiliconFlow's API endpoints, but **only** when handling a Douyin / TikTok video (ASR) or a Douyin image post (OCR). WeChat and YouTube imports do not call SiliconFlow.
 - No analytics, no telemetry. The backend logs to stdout only.
 
+## Security
+
+The backend has **no authentication** beyond the SiliconFlow API key it holds in `$API_KEY`. Any request to `POST /api/video/extract` will be processed and may consume your SiliconFlow quota. This is fine on localhost but dangerous on a shared network.
+
+**Defaults that protect you (1.0.2+):**
+
+- The server binds to `127.0.0.1` only. Other machines on your LAN cannot reach it.
+- You explicitly set `HOST=0.0.0.0` if you want to expose it (e.g. backend on a homelab box, plugin on a laptop on the same trusted LAN). The server prints a loud warning in that case.
+
+**Keep your API key safe:**
+
+- Don't paste your real key into shell commands that end up in `~/.zsh_history`. Prefer a `.env` file (`API_KEY=sk-…`) with `chmod 600`, and source it (`set -a; source .env; set +a; uv run python web/app.py`).
+- The plugin's "API key" setting is stored in your Obsidian vault's plugin data file. Treat the vault accordingly if you sync it.
+- If you suspect the key leaked (committed by accident, posted in a screenshot, etc.), rotate it at <https://cloud.siliconflow.cn/account/ak> — disable the old, generate a new.
+
+**What attackers could do if exposed:**
+
+- Submit arbitrary Douyin / TikTok URLs that consume your ASR quota.
+- Submit Douyin image-post URLs that consume your OCR quota.
+- (They cannot read or modify your vault — the backend doesn't touch the vault. The plugin is what writes to the vault, and it only runs on your machine.)
+
+If you must expose the backend to a network, front it with a reverse proxy that requires HTTP auth (Caddy / Nginx basic auth is enough).
+
 ## Docker
 
 A minimal Dockerfile is included for convenience:

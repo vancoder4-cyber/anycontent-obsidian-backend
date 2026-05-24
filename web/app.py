@@ -210,9 +210,20 @@ async def download_video(url: str, filename: str = "video.mp4"):
 def main():
     """启动服务"""
     port = int(os.getenv("PORT", "8080"))
-    print(f"🚀 启动文案提取器 WebUI: http://localhost:{port}")
+    # Bind to localhost ONLY by default. The backend has no authentication
+    # beyond the server-side API_KEY env var, so exposing it to a LAN (or
+    # worse, the public internet) would let anyone on the network make
+    # requests that get billed to your SiliconFlow account.
+    # Set HOST=0.0.0.0 explicitly if you really need remote access — e.g.
+    # backend on a homelab box, plugin on a laptop on the same trusted LAN.
+    host = os.getenv("HOST", "127.0.0.1")
+    print(f"🚀 启动文案提取器 WebUI: http://{host}:{port}")
     print(f"📝 API_KEY 配置状态: {'已配置' if os.getenv('API_KEY') else '未配置'}")
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    if host != "127.0.0.1":
+        print(f"⚠️  Listening on {host} — anyone who can reach this address can")
+        print(f"   submit URLs that consume your API_KEY quota. Use a trusted")
+        print(f"   network and/or front this with auth.")
+    uvicorn.run(app, host=host, port=port)
 
 
 if __name__ == "__main__":

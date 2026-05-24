@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "anycontent-obsidian-backend"
-version = "1.0.1"
+version = "1.0.2"
 description = "Local backend for the AnyContent Vault Importer Obsidian plugin — ASR / OCR / scrape for Douyin, TikTok, WeChat Official Accounts, and YouTube"
 readme = "README.md"
 license = {text = "Apache-2.0"}
