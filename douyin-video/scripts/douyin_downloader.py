@@ -453,13 +453,30 @@ class DouyinProcessor:
 
     def transcribe_single_audio(self, audio_path: Path) -> str:
         """转录单个音频文件"""
+        # Validate API key encoding up-front — otherwise requests raises a
+        # cryptic "'latin-1' codec can't encode characters in position N-M"
+        # from inside urllib3 when it tries to build the Authorization header.
+        # The OCR path has the same check; this mirrors it for ASR.
+        api_key = (self.api_key or "").strip()
+        if not api_key:
+            raise Exception("ASR 失败：未提供 API_KEY")
+        try:
+            api_key.encode('ascii')
+        except UnicodeEncodeError:
+            bad_chars = [c for c in api_key if ord(c) > 127][:5]
+            raise Exception(
+                f"API_KEY 含非 ASCII 字符（首批异常字符: {bad_chars}）。"
+                f"很可能你的 export 命令里残留了中文 placeholder。"
+                f"请改成: export API_KEY=sk-XXXXXXXX (真的硅基流动 key)"
+            )
+
         files = {
             'file': (audio_path.name, open(audio_path, 'rb'), 'audio/mpeg'),
             'model': (None, self.model)
         }
 
         headers = {
-            "Authorization": f"Bearer {self.api_key}"
+            "Authorization": f"Bearer {api_key}"
         }
 
         try:
