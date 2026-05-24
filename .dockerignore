@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+output/
+.git/
+.env
+.env.*
+!.env.example
+uv.lock
+*.log
+.DS_Store

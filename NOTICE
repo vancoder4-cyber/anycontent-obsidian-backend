@@ -1,0 +1,27 @@
+anycontent-vault-backend
+Copyright 2026 Coder4
+
+This product includes software developed by yzfly as part of the
+douyin-mcp-server project (https://github.com/yzfly/douyin-mcp-server),
+licensed under the Apache License, Version 2.0.
+
+Modifications by Coder4 (2026):
+
+  * Renamed package metadata and entry points to anycontent-vault-backend.
+  * Added URL routing in web/app.py to dispatch to platform-specific extractors
+    based on the source URL (Douyin / TikTok / WeChat / YouTube).
+  * Added web/wechat_extractor.py for WeChat Official Account article scraping
+    (BeautifulSoup-based, mobile UA, inline image references).
+  * Added web/youtube_extractor.py for YouTube transcript + metadata fetching
+    (oEmbed + youtube-transcript-api).
+  * Extended ExtractResponse to carry platform, post_type, author, account,
+    publish_time, thumbnail, and images_markdown fields.
+  * Modified douyin-video/scripts/douyin_downloader.py:
+      - Detect image-post (note) URLs (/share/note/, aweme_type=2) and route
+        them through the OCR pipeline.
+      - Add a fallback chain across SiliconFlow VL models (Qwen3-VL series).
+      - Validate API key encoding to surface helpful errors for non-ASCII input.
+
+All original copyright notices in upstream files are preserved.
+
+Apache 2.0 license text: see the LICENSE file.
